@@ -1,0 +1,1 @@
+add_library(qcs_core qubit.cpp q_circuit.cpp)

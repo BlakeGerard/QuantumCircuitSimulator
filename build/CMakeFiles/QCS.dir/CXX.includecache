@@ -1,0 +1,18 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/blake/Programming/Projects/QuantumCircuitSimulator/test/test.cpp
+catch2/catch.hpp
+-
+iostream
+-
+complex
+-
+q_circuit.h
+/home/blake/Programming/Projects/QuantumCircuitSimulator/test/q_circuit.h
+

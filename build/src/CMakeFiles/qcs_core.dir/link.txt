@@ -1,0 +1,2 @@
+/usr/bin/ar qc libqcs_core.a  CMakeFiles/qcs_core.dir/qubit.cpp.o CMakeFiles/qcs_core.dir/q_circuit.cpp.o
+/usr/bin/ranlib libqcs_core.a
