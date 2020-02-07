@@ -70,10 +70,16 @@ TEST_CASE("Quantum Teleportation before measurement") {
     std::vector<Qubit> qubits = {qubit_m, qubit_1, qubit_2};
 
     Q_Circuit circuit = Q_Circuit();
-    circuit.add_qubits(qubits);
+    circuit.add_qubits(3);
     circuit.H(1);
     circuit.CNOT(std::vector<int>{1, 2});
     circuit.CNOT(std::vector<int>{0, 1});
     circuit.H(0);
-    std::cout << circuit.get_state() << std::endl;
+    std::vector<int> results = circuit.measure(std::vector<int>{0, 1});
+    std::cout << "Qubit Zero: " << results.at(0) << std::endl;
+    std::cout << "Qubit One: " << results.at(1) << std::endl;
+    if (results.at(1) == 1) {circuit.X(2);}
+    if (results.at(0) == 1) {circuit.Z(2);}
+    std::cout << circuit.get_state()<< std::endl;
 }
+

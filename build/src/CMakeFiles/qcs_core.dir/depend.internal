@@ -6,6 +6,7 @@ src/CMakeFiles/qcs_core.dir/q_circuit.cpp.o
  ../include/qubit.h
  ../lib/eigen-3.3.7/Eigen/Core
  ../lib/eigen-3.3.7/Eigen/Dense
+ ../lib/eigen-3.3.7/Eigen/StdVector
  ../lib/eigen-3.3.7/Eigen/src/Core/Array.h
  ../lib/eigen-3.3.7/Eigen/src/Core/ArrayBase.h
  ../lib/eigen-3.3.7/Eigen/src/Core/ArrayWrapper.h
@@ -138,6 +139,8 @@ src/CMakeFiles/qcs_core.dir/q_circuit.cpp.o
  ../lib/eigen-3.3.7/Eigen/src/Core/util/StaticAssert.h
  ../lib/eigen-3.3.7/Eigen/src/Core/util/XprHelper.h
  ../lib/eigen-3.3.7/Eigen/src/SparseCore/SparseUtil.h
+ ../lib/eigen-3.3.7/Eigen/src/StlSupport/StdVector.h
+ ../lib/eigen-3.3.7/Eigen/src/StlSupport/details.h
  ../lib/eigen-3.3.7/Eigen/src/misc/blas.h
  ../lib/eigen-3.3.7/Eigen/src/plugins/ArrayCwiseBinaryOps.h
  ../lib/eigen-3.3.7/Eigen/src/plugins/ArrayCwiseUnaryOps.h
@@ -150,7 +153,6 @@ src/CMakeFiles/qcs_core.dir/q_circuit.cpp.o
  ../lib/eigen-3.3.7/unsupported/Eigen/src/KroneckerProduct/KroneckerTensorProduct.h
  /home/blake/Programming/Projects/QuantumCircuitSimulator/src/q_circuit.cpp
  /usr/include/eigen3/Eigen/Cholesky
- /usr/include/eigen3/Eigen/Core
  /usr/include/eigen3/Eigen/Dense
  /usr/include/eigen3/Eigen/Eigenvalues
  /usr/include/eigen3/Eigen/Geometry

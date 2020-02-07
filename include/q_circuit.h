@@ -1,6 +1,7 @@
 #include "qubit.h"
 #include <Eigen/Dense>
 #include <vector>
+#include <random>
 
 class Q_Circuit {
     public:
@@ -18,13 +19,15 @@ class Q_Circuit {
         void Z(std::vector<int> qubit_indices);
         void CNOT(std::vector<int> qubit_indices);
         void SWAP(std::vector<int> qubit_indices); 
-        void measure(std::vector<int> qubit_indices);
+        std::vector<int> measure(std::vector<int> qubit_indices);
         Eigen::VectorXcd get_state();
 
     private:
         Eigen::VectorXcd state;
+        std::mt19937 generator;
         void apply_single_qubit_gate(int qubit_index, Eigen::Matrix2cd gate);
         void apply_single_qubit_gate(std::vector<int> qubit_indices, Eigen::Matrix2cd gate);
         void apply_cnot_gate(std::vector<int> qubit_indices, Eigen::Matrix2cd gate);
         void apply_swap_gate(std::vector<int> qubit_indices, Eigen::Matrix4d gate);
+        int measure_single_qubit(int qubit_index);
 };

@@ -13,11 +13,11 @@ Eigen/Dense
 -
 vector
 -
+random
+-
 
 ../include/qubit.h
 /usr/include/eigen3/Eigen/Dense
--
-random
 -
 
 ../lib/eigen-3.3.7/Eigen/Cholesky
