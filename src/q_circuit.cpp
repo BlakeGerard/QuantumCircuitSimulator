@@ -101,6 +101,18 @@ void Q_Circuit::Z(std::vector<int> qubit_indices) {
     apply_single_qubit_gate(qubit_indices, gate);
 };
 
+void Q_Circuit::R(double phi, int qubit_index) {
+    Eigen::Matrix2d gate;
+    gate << 1.0, 0.0, 0.0, exp(std::complex<double>(0.0, 1.0) * phi);
+    apply_single_qubit_gate(qubit_index, gate);
+};
+
+void Q_Circuit::R(double phi, std::vector<int> qubit_indices) {
+    Eigen::Matrix2d gate;
+    gate << 1.0, 0.0, 0.0, exp(std::complex<double>(0.0, 1.0) * phi);
+    apply_single_qubit_gate(qubit_indices, gate);
+};
+
 void Q_Circuit::CNOT(std::vector<int> qubit_indices) {
     Eigen::Matrix2d gate;
     gate << 0.0, 1.0, 1.0, 0.0;
@@ -116,6 +128,12 @@ void Q_Circuit::CY(std::vector<int> qubit_indices) {
 void Q_Circuit::CZ(std::vector<int> qubit_indices) {
     Eigen::Matrix2d gate;
     gate << 1.0, 0.0, 0.0, -1.0;
+    apply_controlled_gate(qubit_indices, gate);
+};
+
+void Q_Circuit::CR(double phi, std::vector<int> qubit_indices) {
+    Eigen::Matrix2d gate;
+    gate << 1.0, 0.0, 0.0, exp(std::complex<double>(0.0, 1.0) * phi);
     apply_controlled_gate(qubit_indices, gate);
 };
 

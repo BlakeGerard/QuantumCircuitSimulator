@@ -17,9 +17,12 @@ class Q_Circuit {
         void Y(std::vector<int> qubit_indices);
         void Z(int qubit_index);
         void Z(std::vector<int> qubit_indices);
+        void R(double phi, int qubit_index);
+        void R(double phi, std::vector<int> qubit_indices);
         void CNOT(std::vector<int> qubit_indices);
         void CY(std::vector<int> qubit_indices);
         void CZ(std::vector<int> qubit_indices);
+        void CR(double phi, std::vector<int> qubit_indices);
         void SWAP(std::vector<int> qubit_indices); 
         std::vector<int> measure(std::vector<int> qubit_indices);
         Eigen::VectorXcd get_state();
