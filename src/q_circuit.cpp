@@ -104,7 +104,19 @@ void Q_Circuit::Z(std::vector<int> qubit_indices) {
 void Q_Circuit::CNOT(std::vector<int> qubit_indices) {
     Eigen::Matrix2d gate;
     gate << 0.0, 1.0, 1.0, 0.0;
-    apply_cnot_gate(qubit_indices, gate);
+    apply_controlled_gate(qubit_indices, gate);
+};
+
+void Q_Circuit::CY(std::vector<int> qubit_indices) {
+    Eigen::Matrix2cd gate;
+    gate << 0.0, std::complex<double>(0.0, -1.0), std::complex<double>(0.0, 1.0), 0.0;
+    apply_controlled_gate(qubit_indices, gate);
+};
+
+void Q_Circuit::CZ(std::vector<int> qubit_indices) {
+    Eigen::Matrix2d gate;
+    gate << 1.0, 0.0, 0.0, -1.0;
+    apply_controlled_gate(qubit_indices, gate);
 };
 
 void Q_Circuit::SWAP(std::vector<int> qubit_indices) {
@@ -198,7 +210,7 @@ void Q_Circuit::apply_single_qubit_gate(std::vector<int> qubit_indices, Eigen::M
 /*
 ONLY WORKS WHEN qubit_indices(1) > qubit_indices(0)
 */
-void Q_Circuit::apply_cnot_gate(std::vector<int> qubit_indices, Eigen::Matrix2cd gate) {
+void Q_Circuit::apply_controlled_gate(std::vector<int> qubit_indices, Eigen::Matrix2cd gate) {
     assert(qubit_indices.size() == 2);
     assert(qubit_indices.at(1) > qubit_indices.at(0));
     assert(qubit_indices.at(1) != qubit_indices.at(0));
