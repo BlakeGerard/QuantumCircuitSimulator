@@ -1,4 +1,7 @@
 cmake_minimum_required (VERSION 3.10)
+set(CMAKE_BUILD_TYPE Debug)
+set(CMAKE_CXX_FLAGS "-Wall -Wextra")
+set(CMAKE_CXX_FLAGS_DEBUG "-g -O3")
 project (qcs)
 
 find_package(Eigen3 3.3 REQUIRED NO_MODULE)
