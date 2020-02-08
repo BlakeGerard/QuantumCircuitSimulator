@@ -35,12 +35,12 @@ TEST_CASE("Evaluating CNOT gate on non-adjacent qubits") {
 
     Eigen::VectorXcd expected_state;
     expected_state.resize(8);
-    expected_state << 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0;
+    expected_state << 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0;
 
     Q_Circuit circuit = Q_Circuit();
     circuit.add_qubits(qubits);
 
-    std::vector<int> qubit_indices{0, 2};
+    std::vector<int> qubit_indices{0, 1};   // 101 -> 111
     circuit.CNOT(qubit_indices);
     REQUIRE(circuit.get_state() == expected_state);
 };
@@ -63,14 +63,47 @@ TEST_CASE("Evaluating SWAP gate on non-adjacent qubits") {
     REQUIRE(circuit.get_state() == expected_state);
 };
 
-TEST_CASE("Quantum Teleportation before measurement") {
+TEST_CASE("Testing CCNOT/Toffoli Gate on three qubits") {
+    Qubit qubit_0 = Qubit(0.0, 1.0);
+    Qubit qubit_1 = Qubit(0.0, 1.0);
+    Qubit qubit_2 = Qubit(1.0, 0.0);
+    std::vector<Qubit> qubits = {qubit_0, qubit_1, qubit_2};
+
+    Eigen::VectorXcd expected_state;
+    expected_state.resize(8);
+    expected_state << 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0;
+
+    Q_Circuit circuit = Q_Circuit();
+    circuit.add_qubits(qubits);
+    circuit.CCNOT(0, 1, 2);     // 110 -> 111
+    REQUIRE(circuit.get_state() == expected_state);
+}
+
+TEST_CASE("Testing CCNOT/Toffoli Gate on four qubits") {
+    Qubit qubit_0 = Qubit(0.0, 1.0);
+    Qubit qubit_1 = Qubit(1.0, 0.0); 
+    Qubit qubit_2 = Qubit(0.0, 1.0);
+    Qubit qubit_3 = Qubit(0.0, 1.0); 
+    std::vector<Qubit> qubits = {qubit_0, qubit_1, qubit_2, qubit_3};
+
+    Eigen::VectorXcd expected_state;
+    expected_state.resize(16);
+    expected_state << 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0;
+
+    Q_Circuit circuit = Q_Circuit();
+    circuit.add_qubits(qubits);
+    circuit.CCNOT(0, 2, 3);     // 1011 -> 1010
+    REQUIRE(circuit.get_state() == expected_state);
+}
+
+TEST_CASE("Quantum Teleportation") {
     Qubit qubit_m = Qubit(1.0/sqrt(3.0), sqrt(2.0/3.0));
     Qubit qubit_1 = Qubit(1.0, 0.0);
     Qubit qubit_2 = Qubit(1.0, 0.0);
     std::vector<Qubit> qubits = {qubit_m, qubit_1, qubit_2};
 
     Q_Circuit circuit = Q_Circuit();
-    circuit.add_qubits(3);
+    circuit.add_qubits(qubits);
     circuit.H(1);
     circuit.CNOT(std::vector<int>{1, 2});
     circuit.CNOT(std::vector<int>{0, 1});
@@ -82,4 +115,3 @@ TEST_CASE("Quantum Teleportation before measurement") {
     if (results.at(0) == 1) {circuit.Z(2);}
     std::cout << circuit.get_state()<< std::endl;
 }
-
