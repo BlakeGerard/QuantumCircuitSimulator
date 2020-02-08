@@ -115,3 +115,24 @@ TEST_CASE("Quantum Teleportation") {
     if (results.at(0) == 1) {circuit.Z(2);}
     std::cout << circuit.get_state()<< std::endl;
 }
+
+TEST_CASE("Two-bit full adder with CNOT and Toffoli") {
+    Qubit qubit_0 = Qubit(0.0, 1.0);
+    Qubit qubit_1 = Qubit(0.0, 1.0); 
+    Qubit qubit_2 = Qubit(1.0, 0.0);
+    Qubit qubit_3 = Qubit(1.0, 0.0); 
+    std::vector<Qubit> qubits = {qubit_0, qubit_1, qubit_2, qubit_3};
+
+    Eigen::VectorXcd expected_state;
+    expected_state.resize(16);
+    expected_state << 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0;
+
+    Q_Circuit circuit = Q_Circuit();
+    circuit.add_qubits(qubits);
+    circuit.CCNOT(0, 1, 3);
+    circuit.CNOT(std::vector<int>{0, 1});
+    circuit.CCNOT(1, 2, 3);
+    circuit.CNOT(std::vector<int>{1, 2});
+    circuit.CNOT(std::vector<int>{0, 1});
+    REQUIRE(circuit.get_state() == expected_state);
+}
