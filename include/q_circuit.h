@@ -3,6 +3,8 @@
 #include <vector>
 #include <random>
 
+#define M_PI 3.14159265358979323846
+
 class Q_Circuit {
     public:
         Q_Circuit();
@@ -17,8 +19,8 @@ class Q_Circuit {
         void Y(std::vector<int> qubit_indices);
         void Z(int qubit_index);
         void Z(std::vector<int> qubit_indices);
-        void R(double phi, int qubit_index);
-        void R(double phi, std::vector<int> qubit_indices);
+        void R(double phi, int qubit_index, int dagger = 0);
+        void R(double phi, std::vector<int> qubit_indices, int dagger = 0);
         void CNOT(std::vector<int> qubit_indices);
         void CY(std::vector<int> qubit_indices);
         void CZ(std::vector<int> qubit_indices);

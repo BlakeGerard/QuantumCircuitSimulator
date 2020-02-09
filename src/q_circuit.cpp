@@ -101,15 +101,17 @@ void Q_Circuit::Z(std::vector<int> qubit_indices) {
     apply_single_qubit_gate(qubit_indices, gate);
 };
 
-void Q_Circuit::R(double phi, int qubit_index) {
-    Eigen::Matrix2d gate;
+void Q_Circuit::R(double phi, int qubit_index, int dagger /*=0*/) {
+    Eigen::Matrix2cd gate;
     gate << 1.0, 0.0, 0.0, exp(std::complex<double>(0.0, 1.0) * phi);
+    if (dagger) {gate.adjointInPlace();}
     apply_single_qubit_gate(qubit_index, gate);
 };
 
-void Q_Circuit::R(double phi, std::vector<int> qubit_indices) {
-    Eigen::Matrix2d gate;
+void Q_Circuit::R(double phi, std::vector<int> qubit_indices, int dagger /*=0*/) {
+    Eigen::Matrix2cd gate;
     gate << 1.0, 0.0, 0.0, exp(std::complex<double>(0.0, 1.0) * phi);
+    if (dagger) {gate.adjointInPlace();}
     apply_single_qubit_gate(qubit_indices, gate);
 };
 
@@ -132,7 +134,7 @@ void Q_Circuit::CZ(std::vector<int> qubit_indices) {
 };
 
 void Q_Circuit::CR(double phi, std::vector<int> qubit_indices) {
-    Eigen::Matrix2d gate;
+    Eigen::Matrix2cd gate;
     gate << 1.0, 0.0, 0.0, exp(std::complex<double>(0.0, 1.0) * phi);
     apply_controlled_single_qubit_gate(qubit_indices, gate);
 };
@@ -474,7 +476,7 @@ std::vector<int> Q_Circuit::measure(std::vector<int> qubit_indices) {
         for (int j = 0; j < qubit_indices.size(); ++j) {
             difference = qubit_indices.at(j) - previous_index;
 
-            int proj_index = (i & (msb >> j) ) >> (qubit_indices.size() - 1) - j;
+            int proj_index = (i & (msb >> j) ) >> ((qubit_indices.size() - 1) - j);
             Eigen::Matrix2d current_projector = projectors.at(proj_index);
 
 
@@ -524,7 +526,7 @@ std::vector<int> Q_Circuit::measure(std::vector<int> qubit_indices) {
     state.normalize();
 
     for (int k = 0; k < qubit_indices.size(); ++k) {    
-        results.push_back((result & (msb >> k) ) >> (qubit_indices.size() - 1) - k);
+        results.push_back((result & (msb >> k) ) >> ((qubit_indices.size() - 1) - k));
     }
 
     return results;
