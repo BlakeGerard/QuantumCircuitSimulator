@@ -40,8 +40,7 @@ TEST_CASE("Evaluating CNOT gate on non-adjacent qubits") {
     Q_Circuit circuit = Q_Circuit();
     circuit.add_qubits(qubits);
 
-    std::vector<int> qubit_indices{0, 1};   // 101 -> 111
-    circuit.CNOT(qubit_indices);
+    circuit.CNOT(0, 1);
     REQUIRE(circuit.get_state() == expected_state);
 };
 
@@ -58,8 +57,7 @@ TEST_CASE("Evaluating SWAP gate on non-adjacent qubits") {
     Q_Circuit circuit = Q_Circuit();
     circuit.add_qubits(qubits);
 
-    std::vector<int> qubit_indices{0, 2};
-    circuit.SWAP(qubit_indices);
+    circuit.SWAP(0, 2);
     REQUIRE(circuit.get_state() == expected_state);
 };
 
@@ -105,8 +103,8 @@ TEST_CASE("Quantum Teleportation") {
     Q_Circuit circuit = Q_Circuit();
     circuit.add_qubits(qubits);
     circuit.H(1);
-    circuit.CNOT(std::vector<int>{1, 2});
-    circuit.CNOT(std::vector<int>{0, 1});
+    circuit.CNOT(1, 2);
+    circuit.CNOT(0, 1);
     circuit.H(0);
     std::vector<int> results = circuit.measure(std::vector<int>{0, 1});
     std::cout << "Qubit Zero: " << results.at(0) << std::endl;
@@ -130,10 +128,10 @@ TEST_CASE("Two-bit full adder with CNOT and Toffoli") {
     Q_Circuit circuit = Q_Circuit();
     circuit.add_qubits(qubits);
     circuit.CCNOT(0, 1, 3);
-    circuit.CNOT(std::vector<int>{0, 1});
+    circuit.CNOT(0, 1);
     circuit.CCNOT(1, 2, 3);
-    circuit.CNOT(std::vector<int>{1, 2});
-    circuit.CNOT(std::vector<int>{0, 1});
+    circuit.CNOT(1, 2);
+    circuit.CNOT(0, 1);
     REQUIRE(circuit.get_state() == expected_state);
 }
 
@@ -150,19 +148,19 @@ TEST_CASE("Default 4_adder from enfield compiler examples") {
 
     Q_Circuit circuit = Q_Circuit();
     circuit.add_qubits(qubits);
-    circuit.CNOT(std::vector<int>{1, 2});
+    circuit.CNOT(1, 2);
     circuit.H(3);
-    circuit.CNOT(std::vector<int>{2, 3});
+    circuit.CNOT(2, 3);
     circuit.R(M_PI/8.0, 3, 1);
-    circuit.CNOT(std::vector<int>{0, 3});
-    circuit.R(M_PI/8.0, 3);
-    circuit.CNOT(std::vector<int>{2, 3});
+    circuit.CNOT(0, 3);
+    circuit.R(M_PI/8.0, 3, 0);
+    circuit.CNOT(2, 3);
     circuit.R(M_PI/8.0, 2);
     circuit.R(M_PI/8.0, 3, 1);
-    circuit.CNOT(std::vector<int>{0, 3});
-    circuit.CNOT(std::vector<int>{0, 2});
-    circuit.R(M_PI/8.0, 3);
-    circuit.R(M_PI/8.0, 0);
+    circuit.CNOT(0, 3);
+    circuit.CNOT(0, 2);
+    circuit.R(M_PI/8.0, 3, 0);
+    circuit.R(M_PI/8.0, 0, 0);
     circuit.R(M_PI/8.0, 2, 1);
     circuit.H(3);
     REQUIRE(fabs(circuit.get_state()(1) - expected_state(1)) < 0.00001);

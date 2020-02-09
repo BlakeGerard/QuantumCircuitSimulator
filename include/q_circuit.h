@@ -21,12 +21,12 @@ class Q_Circuit {
         void Z(std::vector<int> qubit_indices);
         void R(double phi, int qubit_index, int dagger = 0);
         void R(double phi, std::vector<int> qubit_indices, int dagger = 0);
-        void CNOT(std::vector<int> qubit_indices);
-        void CY(std::vector<int> qubit_indices);
-        void CZ(std::vector<int> qubit_indices);
-        void CR(double phi, std::vector<int> qubit_indices);
-        void SWAP(std::vector<int> qubit_indices); 
-        void CCNOT(int c1, int c2, int target);
+        void CNOT(int control, int target);
+        void CY(int control, int target);
+        void CZ(int control, int target);
+        void CR(double phi, int control, int target);
+        void SWAP(int qubit1, int qubit2); 
+        void CCNOT(int control1, int control2, int target);
         std::vector<int> measure(std::vector<int> qubit_indices);
         Eigen::VectorXcd get_state();
 
@@ -35,8 +35,8 @@ class Q_Circuit {
         std::mt19937 generator;
         void apply_single_qubit_gate(int qubit_index, Eigen::Matrix2cd gate);
         void apply_single_qubit_gate(std::vector<int> qubit_indices, Eigen::Matrix2cd gate);
-        void apply_controlled_single_qubit_gate(std::vector<int> qubit_indices, Eigen::Matrix2cd gate);
+        void apply_controlled_single_qubit_gate(int control, int target, Eigen::Matrix2cd gate);
         void apply_controlled_two_qubit_gate(int c1, int c2, int target, Eigen::Matrix2cd gate);
-        void apply_swap_gate(std::vector<int> qubit_indices, Eigen::Matrix4d gate);
+        void apply_swap_gate(int qubit1, int qubit2, Eigen::Matrix4d gate);
         int measure_single_qubit(int qubit_index);
 };
