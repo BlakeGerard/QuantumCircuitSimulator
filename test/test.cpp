@@ -136,3 +136,34 @@ TEST_CASE("Two-bit full adder with CNOT and Toffoli") {
     circuit.CNOT(std::vector<int>{0, 1});
     REQUIRE(circuit.get_state() == expected_state);
 }
+
+TEST_CASE("Default 4_adder from enfield compiler examples") {
+    Qubit qubit_0 = Qubit(1.0, 0.0);
+    Qubit qubit_1 = Qubit(1.0, 0.0); 
+    Qubit qubit_2 = Qubit(1.0, 0.0);
+    Qubit qubit_3 = Qubit(1.0, 0.0); 
+    std::vector<Qubit> qubits = {qubit_0, qubit_1, qubit_2, qubit_3};
+
+    Eigen::VectorXcd expected_state;
+    expected_state.resize(16);
+    expected_state << 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0;
+
+    Q_Circuit circuit = Q_Circuit();
+    circuit.add_qubits(qubits);
+    circuit.CNOT(std::vector<int>{1, 2});
+    circuit.H(3);
+    circuit.CNOT(std::vector<int>{2, 3});
+    circuit.R(M_PI/8.0, 3, 1);
+    circuit.CNOT(std::vector<int>{0, 3});
+    circuit.R(M_PI/8.0, 3);
+    circuit.CNOT(std::vector<int>{2, 3});
+    circuit.R(M_PI/8.0, 2);
+    circuit.R(M_PI/8.0, 3, 1);
+    circuit.CNOT(std::vector<int>{0, 3});
+    circuit.CNOT(std::vector<int>{0, 2});
+    circuit.R(M_PI/8.0, 3);
+    circuit.R(M_PI/8.0, 0);
+    circuit.R(M_PI/8.0, 2, 1);
+    circuit.H(3);
+    REQUIRE(fabs(circuit.get_state()(1) - expected_state(1)) < 0.00001);
+}
