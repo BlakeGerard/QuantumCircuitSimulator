@@ -21,6 +21,10 @@ class Q_Circuit {
         void Z(std::vector<int> qubit_indices);
         void R(double phi, int qubit_index, int dagger = 0);
         void R(double phi, std::vector<int> qubit_indices, int dagger = 0);
+        void S(int qubit_index, int dagger = 0);
+        void S(std::vector<int> qubit_indices, int dagger = 0);
+        void T(int qubit_index, int dagger = 0);
+        void T(std::vector<int> qubit_indices, int dagger = 0);
         void CNOT(int control, int target);
         void CY(int control, int target);
         void CZ(int control, int target);

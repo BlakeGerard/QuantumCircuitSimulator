@@ -115,6 +115,34 @@ void Q_Circuit::R(double phi, std::vector<int> qubit_indices, int dagger /*=0*/)
     apply_single_qubit_gate(qubit_indices, gate);
 };
 
+void Q_Circuit::S(int qubit_index, int dagger) {
+    Eigen::Matrix2cd gate;
+    gate << 1.0, 0.0, 0.0, exp(std::complex<double>(0.0, 1.0) * (M_PI/2.0));
+    if (dagger) {gate.adjointInPlace();}
+    apply_single_qubit_gate(qubit_index, gate);
+};
+
+void Q_Circuit::S(std::vector<int> qubit_indices, int dagger) {
+    Eigen::Matrix2cd gate;
+    gate << 1.0, 0.0, 0.0, exp(std::complex<double>(0.0, 1.0) * (M_PI/2.0));
+    if (dagger) {gate.adjointInPlace();}
+    apply_single_qubit_gate(qubit_indices, gate);
+};
+
+void Q_Circuit::T(int qubit_index, int dagger) {
+    Eigen::Matrix2cd gate;
+    gate << 1.0, 0.0, 0.0, exp(std::complex<double>(0.0, 1.0) * (M_PI/4.0));
+    if (dagger) {gate.adjointInPlace();}
+    apply_single_qubit_gate(qubit_index, gate);
+};
+
+void Q_Circuit::T(std::vector<int> qubit_indices, int dagger) {
+    Eigen::Matrix2cd gate;
+    gate << 1.0, 0.0, 0.0, exp(std::complex<double>(0.0, 1.0) * (M_PI/4.0));
+    if (dagger) {gate.adjointInPlace();}
+    apply_single_qubit_gate(qubit_indices, gate);
+};
+
 void Q_Circuit::CNOT(int control, int target) {
     Eigen::Matrix2d gate;
     gate << 0.0, 1.0, 1.0, 0.0;
