@@ -283,7 +283,8 @@ void Q_Circuit::apply_controlled_single_qubit_gate(int control, int target, Eige
     Eigen::MatrixXcd left_side = kroneckerProduct(zero_proj, control_identity).eval();
     Eigen::MatrixXcd right_side = kroneckerProduct(one_proj, kroneckerProduct(spanning_identity, gate).eval()).eval();
     Eigen::MatrixXcd operation = left_side + right_side;
-    apply_pre_and_post_identity_matrices(&operation, control, target);
+    
+    apply_pre_and_post_identity_matrices(operation, control, target);
     state = operation * state;
 };
 
@@ -330,7 +331,7 @@ void Q_Circuit::apply_swap_gate(int qubit1, int qubit2, Eigen::Matrix4d gate) {
         operation = gate;
     };
 
-    apply_pre_and_post_identity_matrices(&operation, qubit1, qubit2);
+    apply_pre_and_post_identity_matrices(operation, qubit1, qubit2);
     state = operation * state;
 };
 
@@ -375,7 +376,7 @@ void Q_Circuit::apply_controlled_two_qubit_gate(int c1, int c2, int target, Eige
     gate_configuration = kroneckerProduct(gate_configuration, gate_modified).eval();
     operation += gate_configuration;
 
-    apply_pre_and_post_identity_matrices(&operation, c1, target);
+    apply_pre_and_post_identity_matrices(operation, c1, target);
     state = operation * state;
 }
 
@@ -521,19 +522,19 @@ int Q_Circuit::measure_single_qubit(int qubit_index) {
     return result;
 }
 
-void Q_Circuit::apply_pre_and_post_identity_matrices(Eigen::MatrixXcd *operation, int qubit1, int qubit2) {
+void Q_Circuit::apply_pre_and_post_identity_matrices(Eigen::MatrixXcd &operation, int qubit1, int qubit2) {
     // Pre and post identity matrices both exists
     if (qubit1 != 0 && qubit2 != log2(state.size()) - 1) {
 
         Eigen::MatrixXd pre_first_index_identity;
         pre_first_index_identity.resize(pow(2, qubit1), pow(2, qubit1));
         pre_first_index_identity.setIdentity();
-        *operation = kroneckerProduct(pre_first_index_identity, *operation).eval();
+        operation = kroneckerProduct(pre_first_index_identity, operation).eval();
 
         Eigen::MatrixXd post_second_index_identity;
         post_second_index_identity.resize(pow(2, (log2(state.size()) - 1) - qubit2), pow(2, (log2(state.size()) - 1) - qubit2));
         post_second_index_identity.setIdentity();
-        *operation = kroneckerProduct(*operation, post_second_index_identity).eval();
+        operation = kroneckerProduct(operation, post_second_index_identity).eval();
         
     // No pre identity, but post exists
     } else if (qubit1 == 0 && qubit2 != log2(state.size()) - 1) {
@@ -541,15 +542,15 @@ void Q_Circuit::apply_pre_and_post_identity_matrices(Eigen::MatrixXcd *operation
         Eigen::MatrixXd post_second_index_identity;
         post_second_index_identity.resize(pow(2, (log2(state.size()) - 1) - qubit2), pow(2, (log2(state.size()) - 1) - qubit2));
         post_second_index_identity.setIdentity();
-        *operation = kroneckerProduct(*operation, post_second_index_identity).eval();
+        operation = kroneckerProduct(operation, post_second_index_identity).eval();
 
     // No post identity, but pre exists
     } else if (qubit1 != 0 && qubit2 == log2(state.size()) - 1) {
         
         Eigen::MatrixXd pre_first_index_identity;
-        pre_first_index_identity.resize(pow(2, qubit1), pow(2, qubit2));
+        pre_first_index_identity.resize(pow(2, qubit1), pow(2, qubit1));
         pre_first_index_identity.setIdentity();
-        *operation = kroneckerProduct(pre_first_index_identity, *operation).eval();
+        operation = kroneckerProduct(pre_first_index_identity, operation).eval();
 
     // No pre or post identity matrices
     };
