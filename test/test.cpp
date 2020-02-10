@@ -151,17 +151,17 @@ TEST_CASE("Default 4_adder from enfield compiler examples") {
     circuit.CNOT(1, 2);
     circuit.H(3);
     circuit.CNOT(2, 3);
-    circuit.R(M_PI/8.0, 3, 1);
+    circuit.T(3, 1);
     circuit.CNOT(0, 3);
-    circuit.R(M_PI/8.0, 3, 0);
+    circuit.T(3, 0);
     circuit.CNOT(2, 3);
-    circuit.R(M_PI/8.0, 2);
-    circuit.R(M_PI/8.0, 3, 1);
+    circuit.T(2, 0);
+    circuit.T(3, 1);
     circuit.CNOT(0, 3);
     circuit.CNOT(0, 2);
-    circuit.R(M_PI/8.0, 3, 0);
-    circuit.R(M_PI/8.0, 0, 0);
-    circuit.R(M_PI/8.0, 2, 1);
+    circuit.T(3, 0);
+    circuit.T(0, 0);
+    circuit.T(2, 1);
     circuit.H(3);
     REQUIRE(fabs(circuit.get_state()(1) - expected_state(1)) < 0.00001);
 }
