@@ -27,22 +27,42 @@ TEST_CASE("Evaluating Hadamard gate application to one or multiple qubits in QT 
     REQUIRE(fabs(circuit.get_state()(0) - I_H_I_state(0)) < 0.00001);
 };
 
-TEST_CASE("Evaluating CNOT gate on non-adjacent qubits") {
+
+TEST_CASE("Evaluating CNOT gate in upward direction") {
     Qubit qubit_0 = Qubit(0.0, 1.0);
-    Qubit qubit_1 = Qubit(1.0, 0.0);
+    Qubit qubit_1 = Qubit(0.0, 1.0);
     Qubit qubit_2 = Qubit(0.0, 1.0);
     std::vector<Qubit> qubits = {qubit_0, qubit_1, qubit_2};
 
     Eigen::VectorXcd expected_state;
     expected_state.resize(8);
-    expected_state << 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0;
+    expected_state << 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0;
 
     Q_Circuit circuit = Q_Circuit();
     circuit.add_qubits(qubits);
 
-    circuit.CNOT(0, 1);
+    circuit.CNOT(0, 2);
     REQUIRE(circuit.get_state() == expected_state);
 };
+
+
+TEST_CASE("Evaluating CNOT gate in downward direction") {
+    Qubit qubit_0 = Qubit(0.0, 1.0);
+    Qubit qubit_1 = Qubit(0.0, 1.0);
+    Qubit qubit_2 = Qubit(0.0, 1.0);
+    std::vector<Qubit> qubits = {qubit_0, qubit_1, qubit_2};
+
+    Eigen::VectorXcd expected_state;
+    expected_state.resize(8);
+    expected_state << 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0;
+
+    Q_Circuit circuit = Q_Circuit();
+    circuit.add_qubits(qubits);
+
+    circuit.CNOT(2, 0);
+    REQUIRE(circuit.get_state() == expected_state);
+};
+
 
 TEST_CASE("Evaluating SWAP gate on non-adjacent qubits") {
     Qubit qubit_0 = Qubit(1.0, 0.0);
@@ -114,6 +134,7 @@ TEST_CASE("Quantum Teleportation") {
     std::cout << circuit.get_state()<< std::endl;
 }
 
+
 TEST_CASE("Two-bit full adder with CNOT and Toffoli") {
     Qubit qubit_0 = Qubit(0.0, 1.0);
     Qubit qubit_1 = Qubit(0.0, 1.0); 
@@ -134,6 +155,7 @@ TEST_CASE("Two-bit full adder with CNOT and Toffoli") {
     circuit.CNOT(0, 1);
     REQUIRE(circuit.get_state() == expected_state);
 }
+
 
 TEST_CASE("Default 4_adder from enfield compiler examples") {
     Qubit qubit_0 = Qubit(1.0, 0.0);

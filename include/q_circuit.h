@@ -43,5 +43,5 @@ class Q_Circuit {
         void apply_controlled_two_qubit_gate(int c1, int c2, int target, Eigen::Matrix2cd gate);
         void apply_swap_gate(int qubit1, int qubit2, Eigen::Matrix4d gate);
         int measure_single_qubit(int qubit_index);
-        void apply_pre_and_post_identity_matrices(Eigen::MatrixXcd &operation, int qubit1, int qubit2);
+        void apply_pre_and_post_identity_matrices(Eigen::MatrixXcd &operation, int control, int target);
 };

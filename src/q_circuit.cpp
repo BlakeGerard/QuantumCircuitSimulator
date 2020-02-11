@@ -264,7 +264,6 @@ void Q_Circuit::apply_single_qubit_gate(std::vector<int> qubit_indices, Eigen::M
 ONLY WORKS WHEN qubit_indices(1) > qubit_indices(0)
 */
 void Q_Circuit::apply_controlled_single_qubit_gate(int control, int target, Eigen::Matrix2cd gate) {
-    assert(target > control);
     assert(target != control);
 
     Eigen::Matrix2d zero_proj;
@@ -273,18 +272,43 @@ void Q_Circuit::apply_controlled_single_qubit_gate(int control, int target, Eige
     one_proj << 0.0, 0.0, 0.0, 1.0;
 
     Eigen::MatrixXd control_identity;
-    control_identity.resize(pow(2, target - control), pow(2, target - control));
-    control_identity.setIdentity();
-
     Eigen::MatrixXd spanning_identity;
-    spanning_identity.resize(pow(2, (target - control) - 1), pow(2, (target - control) - 1));
-    spanning_identity.setIdentity();
+    Eigen::MatrixXcd left_side;
+    Eigen::MatrixXcd right_side;
+    Eigen::MatrixXcd operation;
 
-    Eigen::MatrixXcd left_side = kroneckerProduct(zero_proj, control_identity).eval();
-    Eigen::MatrixXcd right_side = kroneckerProduct(one_proj, kroneckerProduct(spanning_identity, gate).eval()).eval();
-    Eigen::MatrixXcd operation = left_side + right_side;
-    
-    apply_pre_and_post_identity_matrices(operation, control, target);
+    if (control < target) {
+        control_identity.resize(pow(2, target - control), pow(2, target - control));
+        control_identity.setIdentity();
+        left_side = kroneckerProduct(zero_proj, control_identity).eval();
+
+        // Use default CNOT gate or CNOT spanning multiple qubits
+        if (target - control != 1) {
+            spanning_identity.resize(pow(2, (target - control) - 1), pow(2, (target - control) - 1));
+            spanning_identity.setIdentity();
+            right_side = kroneckerProduct(one_proj, kroneckerProduct(spanning_identity, gate).eval()).eval();
+        } else {
+            right_side = kroneckerProduct(one_proj, gate).eval();
+        }
+        operation = left_side + right_side;
+        apply_pre_and_post_identity_matrices(operation, control, target);
+
+    } else {
+        control_identity.resize(pow(2, control - target), pow(2, control - target));
+        control_identity.setIdentity();
+        left_side = kroneckerProduct(control_identity, zero_proj).eval();
+
+        // Use default CNOT gate or CNOT spanning multiple qubits
+        if (control - target != 1) {
+            spanning_identity.resize(pow(2, (control - target) - 1), pow(2, (control - target) - 1));
+            spanning_identity.setIdentity();
+            right_side = kroneckerProduct(kroneckerProduct(gate, spanning_identity).eval(), one_proj).eval();
+        } else {
+            right_side = kroneckerProduct(gate, one_proj).eval();
+        }
+        operation = left_side + right_side;
+        apply_pre_and_post_identity_matrices(operation, control, target);
+    }
     state = operation * state;
 };
 
@@ -522,36 +546,73 @@ int Q_Circuit::measure_single_qubit(int qubit_index) {
     return result;
 }
 
-void Q_Circuit::apply_pre_and_post_identity_matrices(Eigen::MatrixXcd &operation, int qubit1, int qubit2) {
-    // Pre and post identity matrices both exists
-    if (qubit1 != 0 && qubit2 != log2(state.size()) - 1) {
+void Q_Circuit::apply_pre_and_post_identity_matrices(Eigen::MatrixXcd &operation, int control, int target) {
 
-        Eigen::MatrixXd pre_first_index_identity;
-        pre_first_index_identity.resize(pow(2, qubit1), pow(2, qubit1));
-        pre_first_index_identity.setIdentity();
-        operation = kroneckerProduct(pre_first_index_identity, operation).eval();
+    // CNOT(2, 0): do things in reverse
+    if (control > target) {
+        // Pre and post identity matrices both exists
+        if (target != 0 && control != log2(state.size()) - 1) {
 
-        Eigen::MatrixXd post_second_index_identity;
-        post_second_index_identity.resize(pow(2, (log2(state.size()) - 1) - qubit2), pow(2, (log2(state.size()) - 1) - qubit2));
-        post_second_index_identity.setIdentity();
-        operation = kroneckerProduct(operation, post_second_index_identity).eval();
+            Eigen::MatrixXd pre_first_index_identity;
+            pre_first_index_identity.resize(pow(2, (log2(state.size())- 1) - control), pow(2, (log2(state.size())- 1) - control));
+            pre_first_index_identity.setIdentity();
+            operation = kroneckerProduct(pre_first_index_identity, operation).eval();
+
+            Eigen::MatrixXd post_second_index_identity;
+            post_second_index_identity.resize(pow(2, target), pow(2, target));
+            post_second_index_identity.setIdentity();
+            operation = kroneckerProduct(operation, post_second_index_identity).eval();
         
-    // No pre identity, but post exists
-    } else if (qubit1 == 0 && qubit2 != log2(state.size()) - 1) {
+        // No pre identity, but post exists
+        } else if (target == 0 && control != log2(state.size()) - 1) {
         
-        Eigen::MatrixXd post_second_index_identity;
-        post_second_index_identity.resize(pow(2, (log2(state.size()) - 1) - qubit2), pow(2, (log2(state.size()) - 1) - qubit2));
-        post_second_index_identity.setIdentity();
-        operation = kroneckerProduct(operation, post_second_index_identity).eval();
+            Eigen::MatrixXd post_second_index_identity;
+            post_second_index_identity.resize(pow(2, target), pow(2, target));
+            post_second_index_identity.setIdentity();
+            operation = kroneckerProduct(operation, post_second_index_identity).eval();
 
-    // No post identity, but pre exists
-    } else if (qubit1 != 0 && qubit2 == log2(state.size()) - 1) {
+        // No post identity, but pre exists
+        } else if (target != 0 && control == log2(state.size()) - 1) {
         
-        Eigen::MatrixXd pre_first_index_identity;
-        pre_first_index_identity.resize(pow(2, qubit1), pow(2, qubit1));
-        pre_first_index_identity.setIdentity();
-        operation = kroneckerProduct(pre_first_index_identity, operation).eval();
+            Eigen::MatrixXd pre_first_index_identity;
+            pre_first_index_identity.resize(pow(2, (log2(state.size())- 1) - control), pow(2, (log2(state.size())- 1) - control));
+            pre_first_index_identity.setIdentity();
+            operation = kroneckerProduct(pre_first_index_identity, operation).eval();
 
-    // No pre or post identity matrices
-    };
+        // No pre or post identity matrices
+        };
+
+    } else {
+        // Pre and post identity matrices both exists
+        if (control != 0 && target != log2(state.size()) - 1) {
+
+            Eigen::MatrixXd pre_first_index_identity;
+            pre_first_index_identity.resize(pow(2, control), pow(2, control));
+            pre_first_index_identity.setIdentity();
+            operation = kroneckerProduct(pre_first_index_identity, operation).eval();
+
+            Eigen::MatrixXd post_second_index_identity;
+            post_second_index_identity.resize(pow(2, (log2(state.size()) - 1) - target), pow(2, (log2(state.size()) - 1) - target));
+            post_second_index_identity.setIdentity();
+            operation = kroneckerProduct(operation, post_second_index_identity).eval();
+        
+        // No pre identity, but post exists
+        } else if (control == 0 && target != log2(state.size()) - 1) {
+        
+            Eigen::MatrixXd post_second_index_identity;
+            post_second_index_identity.resize(pow(2, (log2(state.size()) - 1) - target), pow(2, (log2(state.size()) - 1) - target));
+            post_second_index_identity.setIdentity();
+            operation = kroneckerProduct(operation, post_second_index_identity).eval();
+
+        // No post identity, but pre exists
+        } else if (control != 0 && target == log2(state.size()) - 1) {
+        
+            Eigen::MatrixXd pre_first_index_identity;
+            pre_first_index_identity.resize(pow(2, control), pow(2, control));
+            pre_first_index_identity.setIdentity();
+            operation = kroneckerProduct(pre_first_index_identity, operation).eval();
+
+        // No pre or post identity matrices
+        };
+    }
 }
