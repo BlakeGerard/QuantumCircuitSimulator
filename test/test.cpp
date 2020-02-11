@@ -97,7 +97,7 @@ TEST_CASE("Testing CCNOT/Toffoli Gate on three qubits") {
     REQUIRE(circuit.get_state() == expected_state);
 }
 
-TEST_CASE("Testing CCNOT/Toffoli Gate on four qubits") {
+TEST_CASE("Testing CCNOT/Toffoli Gate on four qubits in upward direction") {
     Qubit qubit_0 = Qubit(0.0, 1.0);
     Qubit qubit_1 = Qubit(1.0, 0.0); 
     Qubit qubit_2 = Qubit(0.0, 1.0);
@@ -111,6 +111,23 @@ TEST_CASE("Testing CCNOT/Toffoli Gate on four qubits") {
     Q_Circuit circuit = Q_Circuit();
     circuit.add_qubits(qubits);
     circuit.CCNOT(0, 2, 3);     // 1011 -> 1010
+    REQUIRE(circuit.get_state() == expected_state);
+}
+
+TEST_CASE("Testing CCNOT/Toffoli Gate on four qubits in downward direction") {
+    Qubit qubit_0 = Qubit(0.0, 1.0);
+    Qubit qubit_1 = Qubit(0.0, 1.0); 
+    Qubit qubit_2 = Qubit(0.0, 1.0);
+    Qubit qubit_3 = Qubit(0.0, 1.0); 
+    std::vector<Qubit> qubits = {qubit_0, qubit_1, qubit_2, qubit_3};
+
+    Eigen::VectorXcd expected_state; //1111 ->0111
+    expected_state.resize(16);
+    expected_state << 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0;
+
+    Q_Circuit circuit = Q_Circuit();
+    circuit.add_qubits(qubits);
+    circuit.CCNOT(3, 2, 0);
     REQUIRE(circuit.get_state() == expected_state);
 }
 
