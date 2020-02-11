@@ -2,6 +2,7 @@
 #include <catch2/catch.hpp>
 #include <iostream>
 #include <complex>
+#include <chrono>
 #include "q_circuit.h"
 
 TEST_CASE("Evaluating Hadamard gate application to one or multiple qubits in QT circuit") {
@@ -175,6 +176,7 @@ TEST_CASE("Two-bit full adder with CNOT and Toffoli") {
 
 
 TEST_CASE("Default 4_adder from enfield compiler examples") {
+    auto start = std::chrono::high_resolution_clock::now(); 
     Qubit qubit_0 = Qubit(1.0, 0.0);
     Qubit qubit_1 = Qubit(1.0, 0.0); 
     Qubit qubit_2 = Qubit(1.0, 0.0);
@@ -202,5 +204,58 @@ TEST_CASE("Default 4_adder from enfield compiler examples") {
     circuit.T(0, 0);
     circuit.T(2, 1);
     circuit.H(3);
+
+    auto end = std::chrono::high_resolution_clock::now(); 
+    auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
+
     REQUIRE(fabs(circuit.get_state()(1) - expected_state(1)) < 0.00001);
+    std::cout << "----4_adder default----" << std::endl;
+    std::cout << "Time elapsed: " << duration.count() << " microseconds" << std::endl;
+}
+
+
+TEST_CASE("4_adder optimized by enfield compiler") {
+    auto start = std::chrono::high_resolution_clock::now(); 
+    Qubit qubit_0 = Qubit(1.0, 0.0);
+    Qubit qubit_1 = Qubit(1.0, 0.0); 
+    Qubit qubit_2 = Qubit(1.0, 0.0);
+    Qubit qubit_3 = Qubit(1.0, 0.0); 
+    std::vector<Qubit> qubits = {qubit_0, qubit_1, qubit_2, qubit_3};
+
+    Eigen::VectorXcd expected_state;
+    expected_state.resize(16);
+    expected_state << 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0;
+
+    Q_Circuit circuit = Q_Circuit();
+    circuit.add_qubits(qubits);
+    circuit.U3(M_PI/2.0, 0.0, M_PI, 1);
+    circuit.CNOT(3, 2);
+    circuit.H(2);
+    circuit.H(1);
+    circuit.CNOT(1, 2);
+    circuit.H(1);
+    circuit.H(2);
+    circuit.U3(0.0, 0.0, -M_PI/4.0, 1);
+    circuit.CNOT(0, 1);
+    circuit.U3(0.0, 0.0, M_PI/4.0, 1);
+    circuit.H(2);
+    circuit.H(1);
+    circuit.CNOT(1, 2);
+    circuit.H(1);
+    circuit.H(2);
+    circuit.U3(0.0, 0.0, M_PI/4.0, 2);
+    circuit.U3(0.0, 0.0, -M_PI/4.0, 1);
+    circuit.CNOT(0, 1);
+    circuit.U3(0.0, 0.0, M_PI/4.0, 1);
+    circuit.CNOT(0, 2);
+    circuit.U3(0.0, 0.0, M_PI/4.0, 0);
+    circuit.U3(0.0, 0.0, -M_PI/4.0, 2);
+    circuit.U3(M_PI/2.0, 0.0, M_PI, 1);
+    
+    auto end = std::chrono::high_resolution_clock::now(); 
+    auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
+
+    REQUIRE(fabs(circuit.get_state()(1) - expected_state(1)) < 0.00001);
+    std::cout << "----4_adder enfield optimized----" << std::endl;
+    std::cout << "Time elapsed: " << duration.count() << " microseconds" << std::endl;
 }
