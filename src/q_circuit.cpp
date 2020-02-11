@@ -359,48 +359,85 @@ void Q_Circuit::apply_swap_gate(int qubit1, int qubit2, Eigen::Matrix4d gate) {
     state = operation * state;
 };
 
-void Q_Circuit::apply_controlled_two_qubit_gate(int c1, int c2, int target, Eigen::Matrix2cd gate) {
+void Q_Circuit::apply_controlled_two_qubit_gate(int control1, int control2, int target, Eigen::Matrix2cd gate) {
+    assert(control1 != control2 != target);
+    assert((control1 < control2 < target) || (target < control2 < control1));
+
     Eigen::Matrix2d one_proj;
     one_proj << 0.0, 0.0, 0.0, 1.0;
     Eigen::Matrix2d identity_2 = Eigen::Matrix2d::Identity();
-
-    int c2_c1_diff = c2 - c1;
-    int t_c2_diff = target - c2;
-    int t_c1_diff = target - c1;
+    Eigen::Matrix2cd gate_modified = gate - identity_2;
 
     Eigen::MatrixXd spanning_identity;
-    spanning_identity.resize(pow(2, t_c1_diff + 1), pow(2, t_c1_diff + 1));
-    spanning_identity.setIdentity();
-
-    Eigen::MatrixXcd operation;
-    operation = spanning_identity;
-
-    Eigen::Matrix2cd gate_modified = gate - identity_2;
     Eigen::MatrixXcd gate_configuration;
-    
-    if (c2_c1_diff > 1) {
-        Eigen::MatrixXd temp_identity;
-        temp_identity.resize(pow(2, c2_c1_diff - 1), pow(2, c2_c1_diff - 1));
-        temp_identity.setIdentity();
-        gate_configuration = kroneckerProduct(one_proj, temp_identity).eval();
+    Eigen::MatrixXcd operation;
+
+    if (control1 < target) {
+        int c2_c1_diff = control2 - control1;
+        int t_c2_diff = target - control2;
+        int t_c1_diff = target - control1;
+
+        spanning_identity.resize(pow(2, t_c1_diff + 1), pow(2, t_c1_diff + 1));
+        spanning_identity.setIdentity();
+
+        operation = spanning_identity;
+
+        if (c2_c1_diff > 1) {
+            Eigen::MatrixXd temp_identity;
+            temp_identity.resize(pow(2, c2_c1_diff - 1), pow(2, c2_c1_diff - 1));
+            temp_identity.setIdentity();
+            gate_configuration = kroneckerProduct(one_proj, temp_identity).eval();
+        } else {
+            gate_configuration = one_proj;
+        }
+
+        if (t_c2_diff > 1) {
+            Eigen::MatrixXd temp_identity;
+            temp_identity.resize(pow(2, t_c2_diff - 1), pow(2, t_c2_diff - 1));
+            temp_identity.setIdentity();
+            gate_configuration = kroneckerProduct(gate_configuration, one_proj).eval();
+            gate_configuration = kroneckerProduct(gate_configuration, temp_identity).eval();
+        } else {
+            gate_configuration = kroneckerProduct(gate_configuration, one_proj).eval();
+        }
+
+        gate_configuration = kroneckerProduct(gate_configuration, gate_modified).eval();
+        operation += gate_configuration;
+
+        apply_pre_and_post_identity_matrices(operation, control1, target);
     } else {
-        gate_configuration = one_proj;
+        int c1_c2_diff = control1 - control2;
+        int c2_t_diff = control2 - target;
+        int c1_t_diff = control1 - target;
+
+        spanning_identity.resize(pow(2, c1_t_diff + 1), pow(2, c1_t_diff + 1));
+        spanning_identity.setIdentity();
+
+        operation = spanning_identity;
+        gate_configuration = gate_modified;
+
+        if (c2_t_diff > 1) {
+            Eigen::MatrixXd temp_identity;
+            temp_identity.resize(pow(2, c2_t_diff - 1), pow(2, c2_t_diff - 1));
+            temp_identity.setIdentity();
+            gate_configuration = kroneckerProduct(gate_configuration, temp_identity).eval();
+            gate_configuration = kroneckerProduct(gate_configuration, one_proj).eval();
+        } else {
+            gate_configuration = kroneckerProduct(gate_configuration, one_proj);
+        }
+
+        if (c1_c2_diff > 1) {
+            Eigen::MatrixXd temp_identity;
+            temp_identity.resize(pow(2, c2_t_diff - 1), pow(2, c2_t_diff - 1));
+            temp_identity.setIdentity();
+            gate_configuration = kroneckerProduct(gate_configuration, temp_identity).eval();
+            gate_configuration = kroneckerProduct(gate_configuration, one_proj).eval();
+        } else {
+            gate_configuration = kroneckerProduct(gate_configuration, one_proj).eval();
+        }
+        operation += gate_configuration;
+        apply_pre_and_post_identity_matrices(operation, control1, target);
     }
-
-    if (t_c2_diff > 1) {
-        Eigen::MatrixXd temp_identity;
-        temp_identity.resize(pow(2, t_c2_diff - 1), pow(2, t_c2_diff - 1));
-        temp_identity.setIdentity();
-        gate_configuration = kroneckerProduct(gate_configuration, one_proj).eval();
-        gate_configuration = kroneckerProduct(gate_configuration, temp_identity).eval();
-    } else {
-        gate_configuration = kroneckerProduct(gate_configuration, one_proj).eval();
-    }
-
-    gate_configuration = kroneckerProduct(gate_configuration, gate_modified).eval();
-    operation += gate_configuration;
-
-    apply_pre_and_post_identity_matrices(operation, c1, target);
     state = operation * state;
 }
 
