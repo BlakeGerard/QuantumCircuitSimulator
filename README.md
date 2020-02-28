@@ -8,7 +8,7 @@ A personal exercise in modeling quantum computing circuits. Implemented with Eig
 3. Pauli-Y (Y)
 4. Pauli-Z (Z)
 5. Phase (R)
-6. S Gate(S)
+6. S Gate (S)
 7. T Gate (T)
 8. U3 Gate (U3), https://arxiv.org/pdf/1707.03429.pdf, p. 5
 9. CNOT (CNOT)
