@@ -1,5 +1,6 @@
 #include "qubit.h"
 #include <Eigen/Dense>
+#include <unsupported/Eigen/KroneckerProduct>
 #include <vector>
 #include <random>
 

@@ -1,1 +1,1 @@
-add_library(qcs_core qubit.cpp q_circuit.cpp)
+add_library(qcs_core qubit.cpp q_circuit_gates.cpp q_circuit_ops.cpp)
