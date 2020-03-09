@@ -21,17 +21,25 @@ A personal exercise in modeling quantum computing circuits. Implemented with Eig
 # Examples
 ## Quantum Teleportation with Predefined Qubits
     Q_Circuit circuit = Q_Circuit();
+
+    // For this circuit, we pre-define qubit_m
+    // Qubits default to state |0>
     Qubit qubit_m = Qubit(1.0/sqrt(3.0), sqrt(2.0/3.0));
-    Qubit qubit_1 = Qubit(1.0, 0.0);
-    Qubit qubit_2 = Qubit(1.0, 0.0);
+    Qubit qubit_1 = Qubit();
+    Qubit qubit_2 = Qubit();    
     std::vector<Qubit> qubits = {qubit_m, qubit_1, qubit_2};
 
+    // Add qubits and apply gates to specified indices
     circuit.add_qubits(qubits);
     circuit.H(1);
     circuit.CNOT(1, 2);
     circuit.CNOT(0, 1);
     circuit.H(0);
-    std::vector<int> results = circuit.measure(std::vector<int>{0, 1});
+
+    // Measure the results
+    std::vector<int> results = circuit.measure({0, 1});
     if (results.at(1) == 1) {circuit.X(2);}
     if (results.at(0) == 1) {circuit.Z(2);}
+
+    // Print the final state of the circuit
     std::cout << circuit.get_state()<< std::endl;
