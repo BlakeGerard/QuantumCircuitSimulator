@@ -42,4 +42,4 @@ A personal exercise in modeling quantum computing circuits. Implemented with Eig
     if (results.at(0) == 1) {circuit.Z(2);}
 
     // Print the final state of the circuit
-    std::cout << circuit.get_state()<< std::endl;
+    std::cout << circuit.get_state() << std::endl;
