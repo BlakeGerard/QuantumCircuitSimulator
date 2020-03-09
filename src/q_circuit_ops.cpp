@@ -1,5 +1,54 @@
 #include "q_circuit.h"
 #include <Eigen/StdVector>
+#include <chrono>
+
+Q_Circuit::Q_Circuit() {
+    unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
+    generator.seed(seed);
+}
+
+Eigen::VectorXcd Q_Circuit::get_state() {
+    return state;
+}
+
+void Q_Circuit::add_qubits(int n_qubits) {
+    Eigen::Vector2cd ket_zero;
+    ket_zero << 1.0, 0.0;
+
+    state = ket_zero;
+    for (int i = 1; i < n_qubits; ++i) {
+        state = kroneckerProduct(state, ket_zero).eval();
+    }
+}
+
+void Q_Circuit::add_qubits(std::vector<int> bit_string) {
+    Eigen::Vector2cd ket_zero;
+    Eigen::Vector2cd ket_one;
+    ket_zero << 1.0, 0.0;
+    ket_one << 0.0, 1.0;
+
+    if (bit_string.at(0) == 0) {
+        state = ket_zero;
+    } else {
+        state = ket_one;
+    }
+
+    for (int i = 1; i < bit_string.size(); ++i) {
+        if (bit_string.at(i) == 0) {
+            state = kroneckerProduct(state, ket_zero).eval();
+        } else {
+            state = kroneckerProduct(state, ket_one).eval();
+        }
+    }
+}
+
+void Q_Circuit::add_qubits(std::vector<Qubit> qubits) {
+    state = qubits.at(0).get_state();
+
+    for (int i = 1; i < qubits.size(); ++i) {
+        state = kroneckerProduct(state, qubits.at(i).get_state()).eval();
+    }
+}
 
 void Q_Circuit::apply_single_qubit_gate(int qubit_index, Eigen::Matrix2cd gate) {
     Eigen::MatrixXcd operation;
