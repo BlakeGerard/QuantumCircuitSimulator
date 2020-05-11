@@ -1,12 +1,13 @@
-#include "qubit.h"
 #include <Eigen/Dense>
 #include <unsupported/Eigen/KroneckerProduct>
 #include <vector>
 #include <random>
+#include "qubit.h"
 
 #define M_PI 3.14159265358979323846
 
 class Q_Circuit {
+
     public:
         Q_Circuit();
         void add_qubits(int size);
@@ -40,6 +41,7 @@ class Q_Circuit {
     private:
         Eigen::VectorXcd state;
         std::mt19937 generator;
+        
         void apply_single_qubit_gate(int qubit_index, Eigen::Matrix2cd gate);
         void apply_single_qubit_gate(std::vector<int> qubit_indices, Eigen::Matrix2cd gate);
         void apply_controlled_single_qubit_gate(int control, int target, Eigen::Matrix2cd gate);
