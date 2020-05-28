@@ -241,6 +241,7 @@ void Q_Circuit::apply_single_qubit_gate(std::vector<int> qubit_indices, Eigen::M
 };
 
 /*
+test
 ONLY WORKS WHEN qubit_indices(1) > qubit_indices(0)
 */
 void Q_Circuit::apply_controlled_single_qubit_gate(int control, int target, Eigen::Matrix2cd gate) {
