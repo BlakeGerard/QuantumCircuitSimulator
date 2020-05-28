@@ -1,16 +1,47 @@
-#include "q_circuit.h"
-#include <Eigen/StdVector>
-#include <chrono>
+/*
+        Title: q_circuit_ops.cpp
+        Author: Blake Gerard
+        Date: 05/23/2020
+        Description: Functions to implement gate application to specified qubits
+        in a q_circuit. 
+*/
 
+#include <Eigen/StdVector>
+#include <random>
+#include <chrono>
+#include "q_circuit.h"
+
+/*
+    Constructor. Initialize random number generator for measurement.
+*/
 Q_Circuit::Q_Circuit() {
     unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
     generator.seed(seed);
 }
 
+/*
+    Retrieve the current tensor product state of the circuit.
+
+    Params:
+        None
+
+    Return:
+        state: current state of the circuit
+*/
 Eigen::VectorXcd Q_Circuit::get_state() {
     return state;
 }
 
+/*
+    Populate the circuit with a specified number of qubits in the
+    default |0> state.
+
+    Params:
+        n_qubits: number of qubits in the circuit
+
+    Return:
+        None
+*/
 void Q_Circuit::add_qubits(int n_qubits) {
     Eigen::Vector2cd ket_zero;
     ket_zero << 1.0, 0.0;
@@ -21,6 +52,16 @@ void Q_Circuit::add_qubits(int n_qubits) {
     }
 }
 
+/*
+    Populate the circuit with qubits encoding the specified bitstring.
+    Idea taken from Microsoft Q#.
+
+    Params:
+        bit_string: bitstring from which to build the circuit
+
+    Return:
+        None
+*/
 void Q_Circuit::add_qubits(std::vector<int> bit_string) {
     Eigen::Vector2cd ket_zero;
     Eigen::Vector2cd ket_one;
@@ -42,6 +83,15 @@ void Q_Circuit::add_qubits(std::vector<int> bit_string) {
     }
 }
 
+/*
+    Populate the circuit with pre-defined qubits.
+
+    Params:
+        qubits: vector of pre-defined qubits
+
+    Return:
+        None
+*/
 void Q_Circuit::add_qubits(std::vector<Qubit> qubits) {
     state = qubits.at(0).get_state();
 
@@ -50,21 +100,50 @@ void Q_Circuit::add_qubits(std::vector<Qubit> qubits) {
     }
 }
 
+/*
+    Apply a one-dimensional gate to a single qubit at the specified index.
+    Matrix operation for circuit state left evaluation is built with 
+    tensored identity matrices corresponding to unchanged qubits, with
+    the provided gate tensored according to the index.
+
+    Example: For a circuit with 5 qubits, we have inputs 1 and H
+    
+    0   I       
+    1   H        
+    2   I        
+    3   I   ->   I (x) H (x) I_8   
+    4   I        
+
+    Params:
+        qubit_index: index of the target qubit
+        gate: Matrix form of the gate to apply
+
+    Return:
+        None
+*/
 void Q_Circuit::apply_single_qubit_gate(int qubit_index, Eigen::Matrix2cd gate) {
     Eigen::MatrixXcd operation;
 
+    // If the target qubit is the zeroeth qubit, tensor the gate matrix
+    // with identity matrix of dimension 2^(qubit_count - 1)
     if (qubit_index == 0) {
         Eigen::MatrixXd post_index_identity;
         post_index_identity.resize(pow(2.0, log2(state.size())-1.0), pow(2.0, log2(state.size())-1.0));
         post_index_identity.setIdentity();
         operation = kroneckerProduct(gate, post_index_identity).eval();
 
+    // If the target qubit is the last qubit, tensor an identity matrix
+    // of dimension 2^(qubit_count - 1) with the gate matrix
     } else if (qubit_index == log2(state.size()) - 1.0) {
         Eigen::MatrixXd pre_index_identity;
         pre_index_identity.resize(pow(2, qubit_index), pow(2, qubit_index));
         pre_index_identity.setIdentity();
         operation = kroneckerProduct(pre_index_identity, gate).eval();
 
+    // If the target qubit is not the first or last qubit, first tensor
+    // an identity matrix of dimension 2^(qubit_count before index) with the
+    // gate matrix. Then, tensor the new matrix with an identity matrix of
+    // dimension 2^(qubit_count after index)
     } else {
         Eigen::MatrixXd pre_index_identity;
         Eigen::MatrixXd post_index_identity;
@@ -80,6 +159,27 @@ void Q_Circuit::apply_single_qubit_gate(int qubit_index, Eigen::Matrix2cd gate) 
     state = operation * state;
 }; 
 
+/*
+    Apply a one-dimensional gate to a set of qubits at the specified indices.
+    Matrix operation for circuit state left evaluation is built with 
+    tensored identity matrices corresponding to unchanged qubits, with
+    the provided gate tensored according to the indices.
+
+    Example: For a circuit with 5 qubits, we have inputs {0, 1, 4} and H
+    
+    0   H       
+    1   H        
+    2   I        
+    3   I   ->   H (x) H (x) I_4 (x) H     
+    4   H              
+
+    Params:
+        qubit_indices: indices of the target qubits
+        gate: matrix form of the gate to apply
+
+    Return:
+        None
+*/
 void Q_Circuit::apply_single_qubit_gate(std::vector<int> qubit_indices, Eigen::Matrix2cd gate) {
     if (qubit_indices.size() == 1) {
         apply_single_qubit_gate(qubit_indices.at(0), gate);
@@ -89,15 +189,19 @@ void Q_Circuit::apply_single_qubit_gate(std::vector<int> qubit_indices, Eigen::M
     Eigen::MatrixXd identity;
     Eigen::MatrixXcd operation;
 
+    // Here we are iterating through the specified indices and building identity matrices
+    // to span any unchanged qubits to tensor with the provided gate, storing each intermediate
+    // result in the operation matrix. As the loop continues, the operation is gradually
+    // built as the tensor product of the operation on the previous qubits with either the
+    // gate or an identity matrix.
     int previous_index = 0;
     int difference = 0;
     for (int i = 0; i < qubit_indices.size(); ++i) {
         difference = qubit_indices.at(i) - previous_index;
 
-        // At first index, need to set operation to either gate or some identity matrix
+        // For the first qubit, operation will either equal the gate itself or I_2
         if (i == 0) {
         
-            // Gate is applied to first qubit
             if (difference == 0) {
                 operation = gate;
             } else {
@@ -105,11 +209,17 @@ void Q_Circuit::apply_single_qubit_gate(std::vector<int> qubit_indices, Eigen::M
                 identity.setIdentity();
                 operation = kroneckerProduct(identity, gate).eval(); 
             }
+
+        // For all other indices, build the operation from the bottom of the circuit, up.
         } else {
             
-            // Gate applied to very next qubit
+            // If the current index is one after the previous, then the operation is
+            // tensored with the gate.
             if (difference == 1) {
                 operation = kroneckerProduct(operation, gate).eval();
+
+            // Otherwise, build an identity matrix to span all unchanged qubits between
+            // the previous index and the current index.
             } else {
                 identity.resize(pow(2, difference - 1), pow(2, difference - 1));
                 identity.setIdentity();
@@ -117,6 +227,8 @@ void Q_Circuit::apply_single_qubit_gate(std::vector<int> qubit_indices, Eigen::M
                 operation = kroneckerProduct(operation, gate).eval();
             }
 
+            // If we are at the final qubit index, and the index does not correspond to the last
+            // qubit in the circuit, build an indentity matrix to span all remaining qubits.
             if (i == qubit_indices.size() - 1 && qubit_indices.at(i) != log2(state.size() - 1)) {
                 identity.resize(pow(2, (log2(state.size()) - 1) - qubit_indices.at(i)), pow(2, (log2(state.size()) - 1) - qubit_indices.at(i)));
                 identity.setIdentity();
