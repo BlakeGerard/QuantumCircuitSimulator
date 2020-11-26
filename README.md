@@ -3,7 +3,7 @@
 A personal exercise in modeling quantum computing circuits. Implemented with Eigen 3.3.7
 
 # Dependencies
-[This project relies on Eigen3 for matrix computations.](https://eigen.tuxfamily.org/index.php?title=Main_Page)
+This project relies on [Eigen3](https://eigen.tuxfamily.org/index.php?title=Main_Page) for matrix computations.
 
 This project utilizes [Catch2](https://github.com/catchorg/Catch2.git) for testing.
 
