@@ -75,7 +75,7 @@ void Q_Circuit::add_qubits(std::vector<int> bit_string) {
         state = ket_one;
     }
 
-    for (int i = 1; i < bit_string.size(); ++i) {
+    for (std::size_t i = 1; i < bit_string.size(); ++i) {
         if (bit_string.at(i) == 0) {
             state = kroneckerProduct(state, ket_zero).eval();
         } else {
@@ -96,7 +96,7 @@ void Q_Circuit::add_qubits(std::vector<int> bit_string) {
 void Q_Circuit::add_qubits(std::vector<Qubit> qubits) {
     state = qubits.at(0).get_state();
 
-    for (int i = 1; i < qubits.size(); ++i) {
+    for (std::size_t i = 1; i < qubits.size(); ++i) {
         state = kroneckerProduct(state, qubits.at(i).get_state()).eval();
     }
 }
@@ -198,7 +198,7 @@ void Q_Circuit::apply_single_qubit_gate(std::vector<int> qubit_indices, Eigen::M
     // gate or an identity matrix.
     int previous_index = 0;
     int difference = 0;
-    for (int i = 0; i < qubit_indices.size(); ++i) {
+    for (std::size_t i = 0; i < qubit_indices.size(); ++i) {
         difference = qubit_indices.at(i) - previous_index;
 
         // For the first qubit, operation will either equal the gate itself or I_2
@@ -343,8 +343,8 @@ void Q_Circuit::apply_swap_gate(int qubit1, int qubit2, Eigen::Matrix4cd gate) {
 };
 
 void Q_Circuit::apply_controlled_two_qubit_gate(int control1, int control2, int target, Eigen::Matrix2cd gate) {
-    assert(control1 != control2 != target);
-    assert((control1 < control2 < target) || (target < control2 < control1));
+    assert(control1 != control2 && control1 != target && control2 != target);
+    assert(((control1 < control2) && (control2 < target)) || ((target < control2) && (control2 < control1)));
 
     Eigen::Matrix2d one_proj;
     one_proj << 0.0, 0.0, 0.0, 1.0;
@@ -452,7 +452,7 @@ std::vector<int> Q_Circuit::measure(std::vector<int> qubit_indices) {
 
         int previous_index = 0;
         int difference = 0;
-        for (int j = 0; j < qubit_indices.size(); ++j) {
+        for (std::size_t j = 0; j < qubit_indices.size(); ++j) {
             difference = qubit_indices.at(j) - previous_index;
 
             int proj_index = (i & (msb >> j) ) >> ((qubit_indices.size() - 1) - j);
@@ -504,7 +504,7 @@ std::vector<int> Q_Circuit::measure(std::vector<int> qubit_indices) {
     state = possible_new_states.at(result);
     state.normalize();
 
-    for (int k = 0; k < qubit_indices.size(); ++k) {    
+    for (std::size_t k = 0; k < qubit_indices.size(); ++k) {    
         results.push_back((result & (msb >> k) ) >> ((qubit_indices.size() - 1) - k));
     }
 
