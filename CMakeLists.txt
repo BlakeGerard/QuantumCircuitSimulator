@@ -1,10 +1,33 @@
+# Configuration
 cmake_minimum_required (VERSION 3.10)
-set(CMAKE_CXX_FLAGS "-Wall -g -O3")
-project (qcs)
+set(CMAKE_CXX_FLAGS "-Wall -g -O3 -fopenmp")
+set(CMAKE_CXX_STANDARD 11)
+include(GNUInstallDirs)
+
+project(qcs VERSION 1.0)
 
 find_package(Eigen3 3.3 REQUIRED NO_MODULE)
-include_directories(${qcs_SOURCE_DIR}/include)
-include_directories(lib/eigen-3.3.7)
+find_package(Catch2 REQUIRED)
 
-add_subdirectory(src)
-add_subdirectory(test)
+add_library(qcs STATIC  
+            src/qubit.cpp
+            src/gate_matrices.cpp
+            src/q_circuit_gates.cpp
+            src/q_circuit_ops.cpp)
+
+add_executable(alltests
+               src/qubit.cpp 
+               src/gate_matrices.cpp
+               src/q_circuit_gates.cpp
+               src/q_circuit_ops.cpp
+               test/test.cpp)
+
+target_include_directories(qcs PRIVATE include)
+target_include_directories(alltests PRIVATE include)
+
+set_target_properties(qcs PROPERTIES VERSION ${PROJECT_VERSION})
+set_target_properties(qcs PROPERTIES PUBLIC_HEADER include/qcs.h)
+
+install(TARGETS qcs
+        LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+        PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})

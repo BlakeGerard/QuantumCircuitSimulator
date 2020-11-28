@@ -7,6 +7,34 @@ A personal exercise in modeling quantum computing circuits. Implemented with Eig
 
 This project utilizes [Catch2]{https://github.com/catchorg/Catch2.git} for testing.
 
+# Installation
+After installing Eigen3 and Catch2, follow these steps to download and build the QCS library and testing executable.
+
+1. Clone the repository
+``` 
+    git clone https://github.com/BlakeGerard/QuantumCircuitSimulator.git
+
+    cd QuantumCircuitSimulator/
+```
+
+2. Build with cmake
+```
+    mkdir build
+    cd build
+    cmake ..
+    make
+```
+
+3. Run alltests executable from build directory to confirm installation
+```
+    ./alltests
+```
+
+I have provided a ```sample playground.cpp``` file for demo purposes. Run the following command to compile this file:
+```
+g++ -std=c++11 playground.cpp -o playground.exe -Lpath/to/build -lqcs
+```
+
 # Available Gates
 1. Hadamard (H)
 2. Pauli-X (X)
