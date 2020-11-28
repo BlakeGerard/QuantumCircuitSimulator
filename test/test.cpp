@@ -2,7 +2,33 @@
 #include <catch2/catch.hpp>
 #include <iostream>
 #include <complex>
-#include "q_circuit.h"
+#include "../include/qcs.h"
+
+TEST_CASE("Introduction") {
+    std::cout << "Running All QuantumCircuitSimulator Tests." << std::endl;
+    std::cout << "We will display the result of one test for brevity." << std::endl;
+}
+
+TEST_CASE("Quantum Teleportation") {
+    Qubit qubit_m = Qubit(1.0/sqrt(3.0), sqrt(2.0/3.0));
+    Qubit qubit_1 = Qubit();
+    Qubit qubit_2 = Qubit();
+    std::vector<Qubit> qubits = {qubit_m, qubit_1, qubit_2};
+
+    Q_Circuit circuit = Q_Circuit();
+    circuit.add_qubits(qubits);
+    circuit.H(1);
+    circuit.CNOT(1, 2);
+    circuit.CNOT(0, 1);
+    circuit.H(0);
+    std::vector<int> results = circuit.measure({0, 1});
+    if (results.at(1) == 1) {circuit.X(2);}
+    if (results.at(0) == 1) {circuit.Z(2);}
+
+    std::cout << "Printing quantum teleportation test with |m> = [1.0/sqrt(3.0), sqrt(2.0/3.0)]" << std::endl;
+    std::cout << "|" << PSI << "> = " << std::endl << circuit.get_state() << std::endl;
+    std::cout << "-----------------" << std::endl;
+}
 
 TEST_CASE("Prevent gate operations before qubit initialization") {
     Q_Circuit my_circuit = Q_Circuit();
@@ -106,26 +132,6 @@ TEST_CASE("Testing CCNOT/Toffoli Gate on four qubits in downward direction") {
     REQUIRE(circuit.get_state() == expected_state);
 }
 
-TEST_CASE("Quantum Teleportation") {
-    Qubit qubit_m = Qubit(1.0/sqrt(3.0), sqrt(2.0/3.0));
-    Qubit qubit_1 = Qubit();
-    Qubit qubit_2 = Qubit();
-    std::vector<Qubit> qubits = {qubit_m, qubit_1, qubit_2};
-
-    Q_Circuit circuit = Q_Circuit();
-    circuit.add_qubits(qubits);
-    circuit.H(1);
-    circuit.CNOT(1, 2);
-    circuit.CNOT(0, 1);
-    circuit.H(0);
-    std::vector<int> results = circuit.measure({0, 1});
-    if (results.at(1) == 1) {circuit.X(2);}
-    if (results.at(0) == 1) {circuit.Z(2);}
-
-    std::cout << circuit.get_state()<< std::endl;
-}
-
-
 TEST_CASE("Two-bit full adder with CNOT and Toffoli") {
     Eigen::VectorXcd expected_state;
     expected_state.resize(16);
@@ -169,7 +175,6 @@ TEST_CASE("Default 4_adder from enfield compiler examples") {
     REQUIRE(fabs(circuit.get_state()(1) - expected_state(1)) < 0.00001);
 }
 
-
 TEST_CASE("4_adder optimized by enfield compiler") {
     Eigen::VectorXcd expected_state;
     expected_state.resize(16);
@@ -203,3 +208,20 @@ TEST_CASE("4_adder optimized by enfield compiler") {
 
     REQUIRE(fabs(circuit.get_state()(1) - expected_state(1)) < 0.00001);
 }
+
+/*
+TEST_CASE("Quantum Fourier Transform for n qubits") {
+    int n = 3;
+    Q_Circuit circuit = Q_Circuit();
+    circuit.add_qubits(n);
+
+    circuit.H(0);
+    for (int i = 1; i < n; ++i) {
+        for (int j = 1; j <= i; ++j) {
+            circuit.R(M_PI / ((double)j * 2.0), (double)i);
+        }
+        circuit.H(i);
+    }
+    std::cout << circuit.get_state() << std::endl;
+}
+*/

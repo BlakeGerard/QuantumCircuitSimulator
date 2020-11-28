@@ -70,7 +70,7 @@ static Eigen::Matrix2cd T = [] {
     Static construction of the SWAP gate as an Eigen matrix.
 */
 static Eigen::Matrix4cd SWAP = [] {
-    Eigen::Matrix4d gate;
+    Eigen::Matrix4cd gate;
     gate << 1.0, 0.0, 0.0, 0.0,
             0.0, 0.0, 1.0, 0.0,                
             0.0, 1.0, 0.0, 0.0, 
@@ -81,5 +81,4 @@ static Eigen::Matrix4cd SWAP = [] {
 /*
     Vector from which all q_circuit instances pull gates.
 */
-static std::vector<Eigen::MatrixXcd, Eigen::aligned_allocator<Eigen::MatrixXcd>> gate_matrices = 
-{ H, X, Y, Z, S, T, SWAP };
+std::vector<Eigen::MatrixXcd, Eigen::aligned_allocator<Eigen::MatrixXcd>> gate_matrices = { H, X, Y, Z, S, T, SWAP };

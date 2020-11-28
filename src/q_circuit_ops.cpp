@@ -6,10 +6,11 @@
         in a q_circuit. 
 */
 
-#include <Eigen/StdVector>
+#include <eigen3/Eigen/StdVector>
 #include <random>
 #include <chrono>
 #include "q_circuit.h"
+#include <iostream>
 
 /*
     Constructor. Initialize random number generator for measurement.
@@ -135,6 +136,7 @@ void Q_Circuit::apply_single_qubit_gate(int qubit_index, Eigen::Matrix2cd gate) 
     // If the target qubit is the last qubit, tensor an identity matrix
     // of dimension 2^(qubit_count - 1) with the gate matrix
     } else if (qubit_index == log2(state.size()) - 1.0) {
+        //std::cout << "here" << std::endl;
         Eigen::MatrixXd pre_index_identity;
         pre_index_identity.resize(pow(2, qubit_index), pow(2, qubit_index));
         pre_index_identity.setIdentity();
@@ -169,8 +171,8 @@ void Q_Circuit::apply_single_qubit_gate(int qubit_index, Eigen::Matrix2cd gate) 
     
     0   H       
     1   H        
-    2   I        
-    3   I   ->   H (x) H (x) I_4 (x) H     
+    2   I   ->   H (x) H (x) I_4 (x) H      
+    3   I      
     4   H              
 
     Params:
@@ -293,7 +295,7 @@ void Q_Circuit::apply_controlled_single_qubit_gate(int control, int target, Eige
     state = operation * state;
 };
 
-void Q_Circuit::apply_swap_gate(int qubit1, int qubit2, Eigen::Matrix4d gate) {
+void Q_Circuit::apply_swap_gate(int qubit1, int qubit2, Eigen::Matrix4cd gate) {
     assert(qubit2 > qubit1);
     assert(qubit2 != qubit1);
 
@@ -560,7 +562,6 @@ int Q_Circuit::measure_single_qubit(int qubit_index) {
     result = distribution(generator);
     state = possible_new_states.at(result);
     state.normalize();
-
     return result;
 }
 

@@ -6,6 +6,7 @@
         qubits in a q_circuit.
 */
 
+#include <iostream>
 #include "q_circuit.h"
 #include "gate_matrices.h"
 #include "gate_enum.h"
@@ -19,11 +20,9 @@
         None
 */
 void Q_Circuit::H(int qubit_index) {
-    if (!state.isZero()) {
+    if (check_state_init()) {
         apply_single_qubit_gate(qubit_index, gate_matrices[Gate::H]);
-    } else {
-        throw "Must initialize qubits before calling gate operations.";
-    }
+    } 
 }
 
 /*
@@ -35,10 +34,8 @@ void Q_Circuit::H(int qubit_index) {
         None
 */
 void Q_Circuit::H(std::vector<int> qubit_indices) {
-    if (!state.isZero()) {   
+    if (check_state_init()) { 
         apply_single_qubit_gate(qubit_indices, gate_matrices[Gate::H]);
-    } else {
-        throw "Must initialize qubits before calling gate operations.";
     }
 }
 
@@ -51,10 +48,8 @@ void Q_Circuit::H(std::vector<int> qubit_indices) {
         None
 */
 void Q_Circuit::X(int qubit_index) {
-    if (!state.isZero()) {
+    if (check_state_init()) {
         apply_single_qubit_gate(qubit_index, gate_matrices[Gate::X]);
-    } else {
-        throw "Must initialize qubits before calling gate operations.";
     }
 }
 
@@ -67,10 +62,8 @@ void Q_Circuit::X(int qubit_index) {
         None
 */
 void Q_Circuit::X(std::vector<int> qubit_indices) {
-    if (!state.isZero()) {
+    if (check_state_init()) {
         apply_single_qubit_gate(qubit_indices, gate_matrices[Gate::X]);
-    } else {
-        throw "Must initialize qubits before calling gate operations.";
     }
 }
 
@@ -83,10 +76,8 @@ void Q_Circuit::X(std::vector<int> qubit_indices) {
         None
 */
 void Q_Circuit::Y(int qubit_index) {
-    if (!state.isZero()) {
+    if (check_state_init()) {
         apply_single_qubit_gate(qubit_index, gate_matrices[Gate::Y]);
-    } else {
-        throw "Must initialize qubits before calling gate operations.";
     }
 }
 
@@ -99,10 +90,8 @@ void Q_Circuit::Y(int qubit_index) {
         None
 */
 void Q_Circuit::Y(std::vector<int> qubit_indices) {
-    if (!state.isZero()) {
+    if (check_state_init()) {
         apply_single_qubit_gate(qubit_indices, gate_matrices[Gate::Y]);
-    } else {
-        throw "Must initialize qubits before calling gate operations.";
     }
 }
 
@@ -115,10 +104,8 @@ void Q_Circuit::Y(std::vector<int> qubit_indices) {
         None
 */
 void Q_Circuit::Z(int qubit_index) {
-    if (!state.isZero()) {
+    if (check_state_init()) {
         apply_single_qubit_gate(qubit_index, gate_matrices[Gate::Z]);
-    } else {
-        throw "Must initialize qubits before calling gate operations.";
     }
 }
 
@@ -131,10 +118,8 @@ void Q_Circuit::Z(int qubit_index) {
         None
 */
 void Q_Circuit::Z(std::vector<int> qubit_indices) {
-    if (!state.isZero()) {
+    if (check_state_init()) {
         apply_single_qubit_gate(qubit_indices, gate_matrices[Gate::Z]);
-    } else {
-        throw "Must initialize qubits before calling gate operations.";
     }   
 }
 
@@ -149,14 +134,12 @@ void Q_Circuit::Z(std::vector<int> qubit_indices) {
         None
 */
 void Q_Circuit::R(double phi, int qubit_index, int dagger /*=0*/) {
-    if (!state.isZero()) {
+    if (check_state_init()) {
         Eigen::Matrix2cd gate;
         gate << 1.0, 0.0, 0.0, exp(std::complex<double>(0.0, 1.0) * phi);
         if (dagger) {gate.adjointInPlace();}
         apply_single_qubit_gate(qubit_index, gate);
-    } else {
-        throw "Must initialize qubits before calling gate operations.";
-    }   
+    } 
 }
 
 /*
@@ -170,13 +153,11 @@ void Q_Circuit::R(double phi, int qubit_index, int dagger /*=0*/) {
         None
 */
 void Q_Circuit::R(double phi, std::vector<int> qubit_indices, int dagger /*=0*/) {
-    if (!state.isZero()) {
+    if (check_state_init()) {
         Eigen::Matrix2cd gate;
         gate << 1.0, 0.0, 0.0, exp(std::complex<double>(0.0, 1.0) * phi);
         if (dagger) {gate.adjointInPlace();}
         apply_single_qubit_gate(qubit_indices, gate);
-    } else {
-        throw "Must initialize qubits before calling gate operations.";
     }
 }
 
@@ -190,11 +171,9 @@ void Q_Circuit::R(double phi, std::vector<int> qubit_indices, int dagger /*=0*/)
         None
 */
 void Q_Circuit::S(int qubit_index, int dagger) {
-    if (!state.isZero()) {
+    if (check_state_init()) {
         if (dagger) { apply_single_qubit_gate(qubit_index, gate_matrices[Gate::S].adjoint()); }
         else        { apply_single_qubit_gate(qubit_index, gate_matrices[Gate::S]); }
-    } else {
-        throw "Must initialize qubits before calling gate operations.";
     }
 }
 
@@ -208,11 +187,9 @@ void Q_Circuit::S(int qubit_index, int dagger) {
         None
 */
 void Q_Circuit::S(std::vector<int> qubit_indices, int dagger) {
-    if (!state.isZero()) {
+    if (check_state_init()) {
         if (dagger) { apply_single_qubit_gate(qubit_indices, gate_matrices[Gate::S].adjoint()); }
         else        { apply_single_qubit_gate(qubit_indices, gate_matrices[Gate::S]); }
-    } else {
-        throw "Must initialize qubits before calling gate operations.";
     }
 }
 
@@ -226,11 +203,9 @@ void Q_Circuit::S(std::vector<int> qubit_indices, int dagger) {
         None
 */
 void Q_Circuit::T(int qubit_index, int dagger) {
-    if (!state.isZero()) {
+    if (check_state_init()) {
         if (dagger) { apply_single_qubit_gate(qubit_index, gate_matrices[Gate::T].adjoint()); }
         else        { apply_single_qubit_gate(qubit_index, gate_matrices[Gate::T]); }
-    } else {
-        throw "Must initialize qubits before calling gate operations.";
     }
 }
 
@@ -244,11 +219,9 @@ void Q_Circuit::T(int qubit_index, int dagger) {
         None
 */
 void Q_Circuit::T(std::vector<int> qubit_indices, int dagger) {
-    if (!state.isZero()) {
+    if (check_state_init()) {
         if (dagger) { apply_single_qubit_gate(qubit_indices, gate_matrices[Gate::T].adjoint()); }
         else        { apply_single_qubit_gate(qubit_indices, gate_matrices[Gate::T]); }
-    } else {
-        throw "Must initialize qubits before calling gate operations.";
     }
 }
 
@@ -266,15 +239,13 @@ void Q_Circuit::T(std::vector<int> qubit_indices, int dagger) {
         None
 */
 void Q_Circuit::U3(double theta, double phi, double lambda, int qubit_index, int dagger) {
-    if (!state.isZero()) {
+    if (check_state_init()) {
         Eigen::Matrix2cd gate;
         std::complex<double> me_i{0.0, 1.0};
         gate << exp((-me_i * (phi+lambda)) / 2.0) * cos(theta/2.0), -exp((-me_i * (phi-lambda)) / 2.0) * sin(theta/2.0),
                 exp((me_i * (phi-lambda)) / 2.0) * sin(theta/2.0), exp((me_i * (phi+lambda)) / 2.0) * cos(theta/2.0);
         if (dagger) {gate.adjointInPlace();}
         apply_single_qubit_gate(qubit_index, gate);
-    } else {
-        throw "Must initialize qubits before calling gate operations.";
     }
 }
 
@@ -292,15 +263,13 @@ void Q_Circuit::U3(double theta, double phi, double lambda, int qubit_index, int
         None
 */
 void Q_Circuit::U3(double theta, double phi, double lambda, std::vector<int> qubit_indices, int dagger) {
-    if (!state.isZero()) {
+    if (check_state_init()) {
         Eigen::Matrix2cd gate;
         std::complex<double> me_i{0.0, 1.0};
         gate << exp((-me_i * (phi+lambda)) / 2.0) * cos(theta/2.0), -exp((-me_i * (phi-lambda)) / 2.0) * sin(theta/2.0),
                 exp((me_i * (phi-lambda)) / 2.0) * sin(theta/2.0), exp((me_i * (phi+lambda)) / 2.0) * cos(theta/2.0);
         if (dagger) {gate.adjointInPlace();}
         apply_single_qubit_gate(qubit_indices, gate);
-    } else {
-        throw "Must initialize qubits before calling gate operations.";
     }
 }
 
@@ -314,10 +283,8 @@ void Q_Circuit::U3(double theta, double phi, double lambda, std::vector<int> qub
         None
 */
 void Q_Circuit::CNOT(int control, int target) {
-    if (!state.isZero()) {
+    if (check_state_init()) {
         apply_controlled_single_qubit_gate(control, target, gate_matrices[Gate::X]);
-    } else {
-        throw "Must initialize qubits before calling gate operations.";
     }
 }
 
@@ -331,10 +298,8 @@ void Q_Circuit::CNOT(int control, int target) {
         None
 */
 void Q_Circuit::CY(int control, int target) {
-    if (!state.isZero()) {
+    if (check_state_init()) {
         apply_controlled_single_qubit_gate(control, target, gate_matrices[Gate::Y]);
-    } else {
-        throw "Must initialize qubits before calling gate operations.";
     }
 }
 
@@ -348,10 +313,8 @@ void Q_Circuit::CY(int control, int target) {
         None
 */
 void Q_Circuit::CZ(int control, int target) {
-    if (!state.isZero()) {
+    if (check_state_init()) {
         apply_controlled_single_qubit_gate(control, target, gate_matrices[Gate::Z]);
-    } else {
-        throw "Must initialize qubits before calling gate operations.";
     }
 }
 
@@ -366,12 +329,10 @@ void Q_Circuit::CZ(int control, int target) {
         None
 */
 void Q_Circuit::CR(double phi, int control, int target) {
-    if (!state.isZero()) {
+    if (check_state_init()) {
         Eigen::Matrix2cd gate;
         gate << 1.0, 0.0, 0.0, exp(std::complex<double>(0.0, 1.0) * phi);
         apply_controlled_single_qubit_gate(control, target, gate);
-    } else {
-        throw "Must initialize qubits before calling gate operations.";
     }
 }
 
@@ -385,10 +346,8 @@ void Q_Circuit::CR(double phi, int control, int target) {
         None
 */
 void Q_Circuit::SWAP(int qubit1, int qubit2) {
-    if (!state.isZero()) {
+    if (check_state_init()) {
         apply_swap_gate(qubit1, qubit2, gate_matrices[Gate::SWAP]);
-    } else {
-        throw "Must initialize qubits before calling gate operations.";
     }
 }
 
@@ -403,9 +362,16 @@ void Q_Circuit::SWAP(int qubit1, int qubit2) {
         None
 */
 void Q_Circuit::CCNOT(int control1, int control2, int target) {
-    if (!state.isZero()) {
+    if (check_state_init()) {
         apply_controlled_two_qubit_gate(control1, control2, target, gate_matrices[Gate::X]);
-    } else {
-        throw "Must initialize qubits before calling gate operations.";
     }
 }
+
+bool Q_Circuit::check_state_init() {
+    if (state.isZero()) {
+        std::cout << "State vector must be initialized with add_qubits(...) before applying gate operations." << std::endl;
+        exit(1);
+    } else {
+        return true;
+    }
+};
