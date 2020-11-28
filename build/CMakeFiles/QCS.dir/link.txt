@@ -1,1 +1,0 @@
-/usr/bin/c++     CMakeFiles/QCS.dir/test/test.cpp.o  -o QCS 
