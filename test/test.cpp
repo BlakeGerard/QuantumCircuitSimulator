@@ -30,11 +30,6 @@ TEST_CASE("Quantum Teleportation") {
     std::cout << "-----------------" << std::endl;
 }
 
-TEST_CASE("Prevent gate operations before qubit initialization") {
-    Q_Circuit my_circuit = Q_Circuit();
-    REQUIRE_THROWS(my_circuit.H(0));
-}
-
 TEST_CASE("Evaluating Hadamard gate application to one or multiple qubits in QT circuit") {
     Qubit qubit_m = Qubit(1.0/sqrt(3.0), sqrt(2.0/3.0));
     Qubit qubit_1 = Qubit();
