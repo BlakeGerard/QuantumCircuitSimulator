@@ -18,8 +18,8 @@
 #ifndef Q_CIRCUIT_H
 #define Q_CIRCUIT_H
 
-#include <Eigen/Dense>
-#include <unsupported/Eigen/KroneckerProduct>
+#include <eigen3/Eigen/Dense>
+#include <eigen3/unsupported/Eigen/KroneckerProduct>
 #include <vector>
 #include <random>
 #include "qubit.h"
@@ -78,8 +78,10 @@ class Q_Circuit {
         void apply_single_qubit_gate(std::vector<int> qubit_indices, Eigen::Matrix2cd gate);
         void apply_controlled_single_qubit_gate(int control, int target, Eigen::Matrix2cd gate);
         void apply_controlled_two_qubit_gate(int c1, int c2, int target, Eigen::Matrix2cd gate);
-        void apply_swap_gate(int qubit1, int qubit2, Eigen::Matrix4d gate);
+        void apply_swap_gate(int qubit1, int qubit2, Eigen::Matrix4cd gate);
         int measure_single_qubit(int qubit_index);
         void apply_pre_and_post_identity_matrices(Eigen::MatrixXcd &operation, int control, int target);
+
+        bool check_state_init();
 };
 #endif

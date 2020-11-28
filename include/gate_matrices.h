@@ -10,10 +10,11 @@
 #ifndef GATE_MATRICES_H
 #define GATE_MATRICES_H
 
-#include <Eigen/Dense>
-#include <Eigen/StdVector>
+#include <eigen3/Eigen/Dense>
+#include <eigen3/Eigen/StdVector>
 #include <vector>
 
+// extern?
 extern std::vector<Eigen::MatrixXcd, Eigen::aligned_allocator<Eigen::MatrixXcd>> gate_matrices;
 
 #endif

@@ -10,14 +10,14 @@
 
 #ifndef QUBIT_H
 #define QUBIT_H
-#include <Eigen/Dense>
+#include <eigen3/Eigen/Dense>
 
 class Qubit {
     public:
         Qubit();
         Qubit(std::complex<double> a, std::complex<double> b);
         Eigen::Vector2cd get_state();
-        void set_state(Eigen::VectorXcd new_state);
+        void set_state(std::complex<double> a, std::complex<double> b);
     private:
         Eigen::Vector2cd state;
 };
