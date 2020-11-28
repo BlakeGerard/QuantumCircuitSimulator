@@ -25,6 +25,11 @@ add_executable(alltests
 target_include_directories(qcs PRIVATE include)
 target_include_directories(alltests PRIVATE include)
 
+target_link_libraries(qcs Eigen3::Eigen)
+target_link_libraries(qcs Catch2::Catch2)
+target_link_libraries(test Eigen3::Eigen)
+target_link_libraries(test Catch2::Catch2)
+
 set_target_properties(qcs PROPERTIES VERSION ${PROJECT_VERSION})
 set_target_properties(qcs PROPERTIES PUBLIC_HEADER include/qcs.h)
 
