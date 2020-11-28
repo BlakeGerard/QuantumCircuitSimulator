@@ -27,8 +27,8 @@ target_include_directories(alltests PRIVATE include)
 
 target_link_libraries(qcs Eigen3::Eigen)
 target_link_libraries(qcs Catch2::Catch2)
-target_link_libraries(alltest Eigen3::Eigen)
-target_link_libraries(alltest Catch2::Catch2)
+target_link_libraries(alltests Eigen3::Eigen)
+target_link_libraries(alltests Catch2::Catch2)
 
 set_target_properties(qcs PROPERTIES VERSION ${PROJECT_VERSION})
 set_target_properties(qcs PROPERTIES PUBLIC_HEADER include/qcs.h)
